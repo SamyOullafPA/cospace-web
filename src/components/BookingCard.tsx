@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./BookingCard.module.css";
 
 export type BookingCardProps = {
@@ -7,8 +8,14 @@ export type BookingCardProps = {
   active: boolean;
 };
 
-export default function BookingCard({ desk, floor, date, active }: BookingCardProps) {
-  return (
+export default function BookingCard({
+  id,
+  desk,
+  floor,
+  date,
+  active,
+}: BookingCardProps & { id?: number }) {
+  const card = (
     <article className={`${styles.card} ${active ? styles.active : styles.inactive}`}>
       <header className={styles.header}>
         <h2 className={styles.desk}>Desk {desk}</h2>
@@ -21,5 +28,15 @@ export default function BookingCard({ desk, floor, date, active }: BookingCardPr
         <dd>{date}</dd>
       </dl>
     </article>
+  );
+
+  return id === undefined ? card : (
+    <Link
+      href={`/bookings/${id}`}
+      className={styles.link}
+      aria-label={`View booking ${id} for desk ${desk}`}
+    >
+      {card}
+    </Link>
   );
 }

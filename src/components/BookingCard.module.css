@@ -1,3 +1,17 @@
+.link {
+  display: block;
+  border-radius: 12px;
+}
+
+.link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.link:hover .desk {
+  text-decoration: underline;
+}
+
 .card {
   width: 260px;
   padding: 16px;
