@@ -1,0 +1,137 @@
+.dashboard {
+  --sidebar-width: 224px;
+  position: fixed;
+  inset: var(--site-header-height) 0 0;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans);
+}
+
+.sidebar {
+  position: fixed;
+  top: var(--site-header-height);
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  padding: 32px 20px;
+  overflow-y: auto;
+  border-right: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  background: color-mix(in srgb, var(--background) 96%, var(--foreground));
+}
+
+.sidebarTitle {
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.navigation a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.navigation a[aria-current="page"] {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  font-weight: 600;
+}
+
+.navigation a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  margin-left: var(--sidebar-width);
+  padding: 32px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.toolbar h1 {
+  font-size: 28px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.primaryButton {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #166534;
+  border-radius: 6px;
+  background: #166534;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  background: #14532d;
+}
+
+.navigation a:focus-visible,
+.primaryButton:focus-visible,
+.main:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.bookings {
+  min-width: 0;
+  scroll-margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    --sidebar-width: 104px;
+  }
+
+  .sidebar {
+    padding: 24px 12px;
+  }
+
+  .navigation a {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .sidebarTitle {
+    font-size: 13px;
+  }
+
+  .main {
+    padding: 24px 16px;
+  }
+
+  .toolbar h1 {
+    font-size: 24px;
+  }
+}
