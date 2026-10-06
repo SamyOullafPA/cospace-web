@@ -1,0 +1,60 @@
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 32px);
+  max-width: 480px;
+  max-height: calc(100dvh - 32px);
+  margin: 0;
+  padding: 24px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #171717;
+  color-scheme: light;
+  font-family: var(--font-geist-sans);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 20%);
+}
+
+.modal::backdrop {
+  background: rgb(100 100 100 / 55%);
+}
+
+.title {
+  margin: 0 0 20px;
+  padding-right: 72px;
+  overflow-wrap: anywhere;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  text-decoration: underline;
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.content {
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}

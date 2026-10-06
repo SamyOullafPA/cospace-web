@@ -1,0 +1,56 @@
+.container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  font-family: var(--font-geist-sans);
+}
+
+.container:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.table {
+  width: 100%;
+  min-width: 360px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table caption {
+  padding-bottom: 16px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  white-space: nowrap;
+}
+
+.table thead {
+  background: color-mix(in srgb, currentColor 5%, transparent);
+}
+
+.active {
+  color: #166534;
+  font-weight: 600;
+}
+
+.inactive {
+  color: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+  .active {
+    color: #86efac;
+  }
+
+  .inactive {
+    color: #b3b3b3;
+  }
+}
