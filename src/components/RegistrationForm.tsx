@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef, useState, type SubmitEvent } from "react";
+import api, { getApiErrorMessage } from "@/lib/api";
 import type { BookingCardProps } from "./BookingCard";
 import { validateBooking } from "./CreateBookingForm";
-import { isSameBooking } from "@/data/bookings";
+import { isSameBooking, type Booking } from "@/data/bookings";
 
 type RegistrationFormProps = {
-  onAdd: (booking: BookingCardProps) => void;
+  onAdd: (booking: Booking) => void;
   bookings: readonly BookingCardProps[];
 };
 
@@ -15,20 +16,24 @@ const emptyForm = { desk: "", floor: "", date: "" };
 export default function RegistrationForm({ onAdd, bookings }: RegistrationFormProps) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<ReturnType<typeof validateBooking>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const lastSubmittedBooking = useRef<BookingCardProps | null>(null);
 
-  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     // Stop the browser's full-page POST/reload so React keeps control of state.
     e.preventDefault();
+    if (isSubmitting) return;
 
     const validationErrors = validateBooking(form.desk, form.floor, form.date);
-    const floor = Number(form.floor);
     setErrors(validationErrors);
+    setSubmitError(null);
     if (Object.keys(validationErrors).length > 0) return;
 
     const booking: BookingCardProps = {
       desk: form.desk.trim(),
-      floor,
+      // The API stores floors as labels like "Floor 7" (min 5 chars).
+      floor: `Floor ${form.floor.trim()}`,
       date: form.date,
       active: true,
     };
@@ -41,8 +46,17 @@ export default function RegistrationForm({ onAdd, bookings }: RegistrationFormPr
     }
 
     lastSubmittedBooking.current = booking;
-    onAdd(booking);
-    setForm(emptyForm);
+    setIsSubmitting(true);
+    try {
+      const response = await api.post<Booking>("/bookings", booking);
+      onAdd(response.data);
+      setForm(emptyForm);
+    } catch (error) {
+      lastSubmittedBooking.current = null;
+      setSubmitError(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function update(field: keyof typeof emptyForm, value: string) {
@@ -95,9 +109,36 @@ export default function RegistrationForm({ onAdd, bookings }: RegistrationFormPr
         />
         {errors.date && <span id="registration-date-error" role="alert" style={{ display: "block", color: "red" }}>{errors.date}</span>}
       </label>
-      <button type="submit" style={{ padding: "8px 16px" }}>
-        Book desk
+      <button type="submit" disabled={isSubmitting} style={{ padding: "8px 16px" }}>
+        {isSubmitting ? "Saving..." : "Book desk"}
       </button>
+      {submitError && (
+        <div
+          role="alert"
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 12,
+            padding: "12px 16px",
+            border: "1px solid #b42318",
+            borderRadius: 8,
+            background: "#fef3f2",
+            color: "#7a271a",
+          }}
+        >
+          <span><strong>Booking not saved.</strong> {submitError}</span>
+          <button
+            type="button"
+            onClick={() => setSubmitError(null)}
+            aria-label="Dismiss error"
+            style={{ background: "none", border: "none", color: "inherit", fontSize: 18, cursor: "pointer" }}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </form>
   );
 }
