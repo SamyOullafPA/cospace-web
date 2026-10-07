@@ -5,7 +5,7 @@ import Link from "next/link";
 import BaseModal from "@/components/BaseModal";
 import BookingsTable from "@/components/BookingsTable";
 import RegistrationForm from "@/components/RegistrationForm";
-import { initialBookings, type Booking } from "@/data/bookings";
+import { initialBookings, isSameBooking, type Booking } from "@/data/bookings";
 import styles from "./dashboard.module.css";
 
 export default function Home() {
@@ -13,7 +13,9 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function addBooking(booking: Omit<Booking, "id">) {
-    setBookings((previous) => [...previous, { ...booking, id: Date.now() }]);
+    setBookings((previous) => previous.some((existing) => isSameBooking(existing, booking))
+      ? previous
+      : [...previous, { ...booking, id: Date.now() }]);
     setIsModalOpen(false);
   }
 
@@ -46,7 +48,7 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         title="Book a desk"
       >
-        <RegistrationForm onAdd={addBooking} />
+        <RegistrationForm onAdd={addBooking} bookings={bookings} />
       </BaseModal>
     </div>
   );

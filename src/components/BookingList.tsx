@@ -3,14 +3,16 @@
 import { useState } from "react";
 import BookingCard, { type BookingCardProps } from "./BookingCard";
 import RegistrationForm from "./RegistrationForm";
-import { initialBookings, type Booking } from "@/data/bookings";
+import { initialBookings, isSameBooking, type Booking } from "@/data/bookings";
 
 export default function BookingList() {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [query, setQuery] = useState("");
 
   function addBooking(booking: BookingCardProps) {
-    setBookings((prev) => [...prev, { ...booking, id: Date.now() }]);
+    setBookings((prev) => prev.some((existing) => isSameBooking(existing, booking))
+      ? prev
+      : [...prev, { ...booking, id: Date.now() }]);
   }
 
   const q = query.trim().toLowerCase();
@@ -20,7 +22,7 @@ export default function BookingList() {
 
   return (
     <section>
-      <RegistrationForm onAdd={addBooking} />
+      <RegistrationForm onAdd={addBooking} bookings={bookings} />
       <input
         type="search"
         placeholder="Search by desk, floor or date"
