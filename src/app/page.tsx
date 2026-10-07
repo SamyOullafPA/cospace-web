@@ -1,21 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import BaseModal from "@/components/BaseModal";
-import BookingsTable from "@/components/BookingsTable";
+import BookingCard from "@/components/BookingCard";
 import RegistrationForm from "@/components/RegistrationForm";
-import { initialBookings, isSameBooking, type Booking } from "@/data/bookings";
+import { isColleagueOpportunity, isSameBooking, type ColleagueOpportunity } from "@/data/bookings";
 import styles from "./dashboard.module.css";
 
 export default function Home() {
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
+  const [bookings, setBookings] = useState<ColleagueOpportunity[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  function addBooking(booking: Omit<Booking, "id">) {
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadBookings() {
+      try {
+        const response = await fetch("http://localhost:5000/bookings", {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Could not load bookings (${response.status}).`);
+        }
+
+        const payload: unknown = await response.json();
+        const data: unknown = payload !== null && typeof payload === "object" && "data" in payload
+          ? payload.data
+          : payload;
+        if (!Array.isArray(data) || !data.every(isColleagueOpportunity)) {
+          throw new Error("The server returned invalid booking data.");
+        }
+        const opportunities: ColleagueOpportunity[] = data;
+        if (!controller.signal.aborted) setBookings(opportunities);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setError(error instanceof Error ? error.message : "Could not load bookings.");
+        }
+      } finally {
+        if (!controller.signal.aborted) setIsLoading(false);
+      }
+    }
+
+    void loadBookings();
+    return () => controller.abort();
+  }, []);
+
+  function addBooking(booking: ColleagueOpportunity) {
     setBookings((previous) => previous.some((existing) => isSameBooking(existing, booking))
       ? previous
-      : [...previous, { ...booking, id: Date.now() }]);
+      : [...previous, booking]);
     setIsModalOpen(false);
   }
 
@@ -34,13 +70,26 @@ export default function Home() {
           <button
             type="button"
             className={styles.primaryButton}
+            disabled={isLoading || Boolean(error)}
             onClick={() => setIsModalOpen(true)}
           >
             Book a desk
           </button>
         </div>
         <section id="desk-bookings" className={styles.bookings} aria-label="Bookings">
-          <BookingsTable bookings={bookings} />
+          {isLoading ? (
+            <p role="status">Loading...</p>
+          ) : error ? (
+            <p role="alert">{error}</p>
+          ) : bookings.length === 0 ? (
+            <p>No bookings yet.</p>
+          ) : (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+              {bookings.map((booking) => (
+                <BookingCard key={booking.id} {...booking} />
+              ))}
+            </div>
+          )}
         </section>
       </main>
       <BaseModal

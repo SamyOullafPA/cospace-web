@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import BookingCard, { type BookingCardProps } from "./BookingCard";
+import BookingCard from "./BookingCard";
 import RegistrationForm from "./RegistrationForm";
 import { initialBookings, isSameBooking, type Booking } from "@/data/bookings";
 
@@ -9,15 +9,15 @@ export default function BookingList() {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [query, setQuery] = useState("");
 
-  function addBooking(booking: BookingCardProps) {
+  function addBooking(booking: Booking) {
     setBookings((prev) => prev.some((existing) => isSameBooking(existing, booking))
       ? prev
-      : [...prev, { ...booking, id: Date.now() }]);
+      : [...prev, booking]);
   }
 
   const q = query.trim().toLowerCase();
   const visible = bookings.filter((b) =>
-    [b.desk, String(b.floor), b.date].some((field) => field.toLowerCase().includes(q))
+    [b.desk, b.floor, b.date].some((field) => field.toLowerCase().includes(q))
   );
 
   return (

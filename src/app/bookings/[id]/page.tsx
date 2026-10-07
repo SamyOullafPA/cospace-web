@@ -10,7 +10,7 @@ export default async function BookingPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const booking = initialBookings.find((booking) => String(booking.id) === id);
+    const booking = initialBookings.find((booking) => booking.id === id);
 
     if (!booking) {
         notFound();

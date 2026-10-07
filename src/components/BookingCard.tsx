@@ -3,7 +3,7 @@ import styles from "./BookingCard.module.css";
 
 export type BookingCardProps = {
   desk: string;
-  floor: number;
+  floor: string;
   date: string;
   active: boolean;
 };
@@ -14,7 +14,7 @@ export default function BookingCard({
   floor,
   date,
   active,
-}: BookingCardProps & { id?: number }) {
+}: BookingCardProps & { id?: string }) {
   const card = (
     <article className={`${styles.card} ${active ? styles.active : styles.inactive}`}>
       <header className={styles.header}>
